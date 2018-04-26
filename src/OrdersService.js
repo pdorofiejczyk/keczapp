@@ -1,15 +1,15 @@
 class OrdersService {
-	create() {
-		return "uuid";
-	}
+  create() {
+    return "uuid";
+  }
 
-	add(orderId, item) {
-		return [];
-	}
+  add(orderId, item) {
+    return [];
+  }
 
-	remove(orderId, itemId) {
-		return [];
-	}
+  remove(orderId, itemId) {
+    return [];
+  }
 }
 
 export default new OrdersService();

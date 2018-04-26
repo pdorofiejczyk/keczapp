@@ -9,35 +9,39 @@ class LoginPage extends Component {
   }
 
   componentDidMount() {
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      this.setState({ user });
-    } 
-  });
-}
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          user
+        });
+      }
+    });
+  }
 
   login = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
 
     firebase.auth().signInWithPopup(provider).then((result) => {
-      this.setState({user: result.user});
-       console.log(this.state);
-  // ...
-}).catch((error) => {
-  console.log(error);
-});
+      this.setState({
+        user: result.user
+      });
+      console.log(this.state);
+    // ...
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
-  render () {
+  render() {
     const {user} = this.state;
-  	return user ? (  <div>
-    <Image src={user.photoURL} avatar />
-    <span>{user.displayName}</span>
-  </div>) : (
-          <Button color='google plus' onClick={this.login}>
-      <Icon name='google plus' /> Sign up with Gootle
-    </Button>
-    );
+    return user ? (  <div>
+                       <Image src={ user.photoURL } avatar />
+                       <span>{ user.displayName }</span>
+                     </div>) : (
+      <Button color='google plus' onClick={ this.login }>
+        <Icon name='google plus' /> Sign up with Gootle
+      </Button>
+      );
   }
 }
 

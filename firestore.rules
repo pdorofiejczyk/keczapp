@@ -1,0 +1,22 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /orders/{order} {
+      allow update: if request.auth.uid == resource.data.userId && get(/databases/$(database)/documents/orders/$(order)).data.status == "new";
+      allow read, create: if request.auth.uid != null;
+
+      match /items/{item} {
+	      allow update, delete: if request.auth.uid == resource.data.userId && get(/databases/$(database)/documents/orders/$(order)).data.status == "new";
+	      allow create: if request.auth.uid != null && get(/databases/$(database)/documents/orders/$(order)).data.status == "new";
+	      allow read: if request.auth.uid != null;
+      }
+    }
+
+    match /balance/{document=**} {
+    	allow read: if request.auth.uid != null;
+    }
+
+    match /userProfile/{document=**} {
+    	allow read: if request.auth.uid != null;
+    }
+  }
+}

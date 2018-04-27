@@ -10,7 +10,8 @@ import {
   Icon,
   Container,
   Loader,
-  Dimmer
+  Dimmer,
+  Divider
 } from "semantic-ui-react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import logo from "../keczapp.png";
@@ -24,10 +25,13 @@ class App extends Component {
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
+      this.setState({
+        isLoading: false
+      });
+
       if (user) {
         this.setState({
-          user,
-          isLoading: false
+          user
         });
       }
     });
@@ -92,16 +96,13 @@ class App extends Component {
         </Grid>
       </Container>
     ) : (
-      <Grid columns="equal">
-        {top}
-        <Grid.Row>
-          <Grid.Column>
-            <Button color="google plus" onClick={this.login}>
-              <Icon name="google plus" /> Sign in with Google
-            </Button>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <Dimmer active inverted>
+        <Image src={logo} centered />
+        <Divider hidden />
+        <Button color="google plus" onClick={this.login}>
+          <Icon name="google plus" /> Sign in with Google
+        </Button>
+      </Dimmer>
     );
   }
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack",
     "serve": "http-server ./dist/",
-    "start": "webpack-dev-server --history-api-fallback --open"
+    "start": "webpack-dev-server --history-api-fallback --open",
+    "precommit": "pretty-quick --staged"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +23,9 @@
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "http-server": "^0.11.1",
+    "husky": "^0.14.3",
+    "prettier": "1.12.1",
+    "pretty-quick": "^1.4.1",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
     "webpack": "^4.5.0",

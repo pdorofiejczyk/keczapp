@@ -38,6 +38,7 @@ class AddOrderForm extends Component {
           <Form.Input
             placeholder="Price"
             name="price"
+            type="number"
             value={price}
             onChange={this.onChange}
           />

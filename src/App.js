@@ -75,7 +75,7 @@ class App extends Component {
 
     return this.state.user ? (
       <Container>
-        <Grid columns="equal">
+        <Grid columns="equal" verticalAlign="middle">
           {top}
           <Grid.Row>
             <Grid.Column>

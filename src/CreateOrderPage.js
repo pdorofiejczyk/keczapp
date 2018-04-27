@@ -47,6 +47,7 @@ class CreateOrderPage extends Component {
           <Form.Input
             placeholder="Delivery price"
             name="price"
+            type="number"
             value={price}
             onChange={this.onChange}
           />

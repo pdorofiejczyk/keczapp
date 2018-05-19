@@ -3,14 +3,71 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
+const getOperationType = (prevStatus, nextStatus) => {
+  switch (true) {
+    case prevStatus === "new" && nextStatus === "closed":
+      return "fialization";
+    case prevStatus === "closed" && nextStatus === "canceled":
+      return "rollback";
+    case prevStatus === "new" && nextStatus === "canceled":
+      return "cancelation";
+  }
+};
+
+const getOperationSign = operationType => {
+  switch (operationType) {
+    case "fialization":
+      return 1;
+    case "rollback":
+      return -1;
+    default:
+      return 0;
+  }
+};
+
+const storeBalanceHistory = (
+  balanceRef,
+  orderId,
+  orderOwnerId,
+  orderClientId,
+  amount,
+  comment
+) => {
+  balanceRef
+    .doc(orderClientId)
+    .collection("history")
+    .add({
+      orderId: orderId,
+      userId: orderOwnerId,
+      amount: -1 * amount,
+      comment: comment
+    });
+
+  balanceRef
+    .doc(orderOwnerId)
+    .collection("history")
+    .add({
+      orderId: orderId,
+      userId: orderClientId,
+      amount: amount,
+      comment: comment
+    });
+};
+
 exports.storeBalanceHistory = functions.firestore
   .document("/orders/{orderId}")
   .onUpdate((change, context) => {
+    const beforeOrderData = change.before.data();
     const orderData = change.after.data();
+    const operationType = getOperationType(
+      beforeOrderData.status,
+      orderData.status
+    );
 
-    if (orderData.status === "closed") {
+    if (operationType === "fialization" || operationType === "rollback") {
       const itemsRef = change.after.ref.collection("items");
       const balanceRef = admin.firestore().collection("balance");
+      const operationSign = getOperationSign(operationType);
 
       return itemsRef.get().then(querySnapshot => {
         const itemsCount = querySnapshot.size;
@@ -21,50 +78,28 @@ exports.storeBalanceHistory = functions.firestore
 
           uniqueUsersMap[itemData.userId] = true;
 
-          balanceRef
-            .doc(itemData.userId)
-            .collection("history")
-            .add({
-              orderId: context.params.orderId,
-              userId: orderData.userId,
-              amount: -1 * itemData.price,
-              comment: orderData.name + ": " + itemData.name
-            });
-
-          balanceRef
-            .doc(orderData.userId)
-            .collection("history")
-            .add({
-              orderId: context.params.orderId,
-              userId: itemData.userId,
-              amount: itemData.price,
-              comment: orderData.name + ": " + itemData.name
-            });
+          storeBalanceHistory(
+            balanceRef,
+            context.params.orderId,
+            orderData.userId,
+            itemData.userId,
+            operationSign * itemData.price,
+            orderData.name + ": " + itemData.name
+          );
         });
 
         const uniqueUsers = Object.keys(uniqueUsersMap);
         const deliveryPricePerItem = orderData.price / uniqueUsers.length;
 
         uniqueUsers.forEach(userId => {
-          balanceRef
-            .doc(userId)
-            .collection("history")
-            .add({
-              orderId: context.params.orderId,
-              userId: orderData.userId,
-              amount: -1 * deliveryPricePerItem,
-              comment: "Dostawa z: " + orderData.name
-            });
-
-          balanceRef
-            .doc(orderData.userId)
-            .collection("history")
-            .add({
-              orderId: context.params.orderId,
-              userId: userId,
-              amount: deliveryPricePerItem,
-              comment: "Dostawa z: " + orderData.name
-            });
+          storeBalanceHistory(
+            balanceRef,
+            context.params.orderId,
+            orderData.userId,
+            userId,
+            operationSign * deliveryPricePerItem,
+            "Dostawa z: " + orderData.name
+          );
         });
       });
     }

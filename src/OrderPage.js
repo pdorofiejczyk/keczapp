@@ -104,6 +104,12 @@ class OrderPage extends Component {
     }
   };
 
+  getUserName = userId => {
+    return this.state.users[userId]
+      ? this.state.users[userId].displayName
+      : userId;
+  };
+
   render() {
     if (
       this.state === null ||
@@ -127,9 +133,8 @@ class OrderPage extends Component {
 
     const orderInfo = orderData ? (
       <div>
-        Zamówienie z:
-        {orderData.name}, Koszt dostawy:
-        {orderData.price} zł
+        Zamawiający: {this.getUserName(orderData.userId)}, Zamówienie z:{" "}
+        {orderData.name}, Koszt dostawy: {orderData.price} zł
       </div>
     ) : (
       <div />

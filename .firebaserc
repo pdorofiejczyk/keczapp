@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "keczapp-b9eff"
+    "default": "keczapp-b9eff",
+    "dev": "keczapp-dev",
+    "prod": "keczapp-b9eff"
   }
 }

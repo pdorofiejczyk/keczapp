@@ -3,6 +3,7 @@ import OrderPage from "./OrderPage";
 import CreateOrderPage from "./CreateOrderPage";
 import BalancePage from "./BalancePage";
 import LoginPage from "./LoginPage";
+import GroupsPage from "./GroupsPage";
 import {
   Button,
   Image,
@@ -89,6 +90,7 @@ class App extends Component {
                   <Route path="/order/:id" component={OrderPage} />
                   <Route path="/balance" component={BalancePage} />
                   <Route path="/balance/:userId" component={BalancePage} />
+                  <Route path="/groups" component={GroupsPage} />
                 </Switch>
               </Router>
             </Grid.Column>
